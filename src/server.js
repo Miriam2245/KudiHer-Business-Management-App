@@ -24,7 +24,7 @@ app.get('/', (req, res) => {
 });
 
 // ... existing imports ...
-const authRoutes = require('./src/routes/authRoutes');
+const authRoutes = require('./routes/authRoutes');
 
 // ... other middleware ...
 app.use(express.json());
