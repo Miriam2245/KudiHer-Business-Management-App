@@ -1,9 +1,9 @@
-const Transaction = require('../models/Transaction');
 const mongoose = require('mongoose');
+const Expense = require('../models/Expense');
 
 const hasOwn = (obj, key) => Object.prototype.hasOwnProperty.call(obj, key);
 
-const validateTransactionPayload = (payload, isPartial = false) => {
+const validateExpensePayload = (payload, isPartial = false) => {
   const errors = {};
 
   if (!isPartial || hasOwn(payload, 'amount')) {
@@ -13,6 +13,12 @@ const validateTransactionPayload = (payload, isPartial = false) => {
       errors.amount = 'Amount must be a valid number';
     } else if (payload.amount <= 0) {
       errors.amount = 'Amount must be greater than 0';
+    }
+  }
+
+  if (!isPartial || hasOwn(payload, 'description')) {
+    if (typeof payload.description !== 'string' || !payload.description.trim()) {
+      errors.description = 'Description is required';
     }
   }
 
@@ -51,13 +57,13 @@ const formatMongooseValidationErrors = (error) => {
   return errors;
 };
 
-// @desc    Create transaction
-// @route   POST /api/transactions
+// @desc    Create expense
+// @route   POST /api/expenses
 // @access  Private
-exports.createTransaction = async (req, res) => {
+exports.createExpense = async (req, res) => {
   try {
-    const { type, amount, description, category, date } = req.body;
-    const errors = validateTransactionPayload({ amount, category, date });
+    const { amount, description, category, date } = req.body;
+    const errors = validateExpensePayload({ amount, description, category, date });
 
     if (Object.keys(errors).length > 0) {
       return res.status(400).json({
@@ -67,19 +73,18 @@ exports.createTransaction = async (req, res) => {
       });
     }
 
-    const transaction = await Transaction.create({
+    const expense = await Expense.create({
       user: req.user.id,
-      type,
       amount,
-      description,
+      description: description.trim(),
       category: category.trim(),
       date: date || Date.now()
     });
 
     res.status(201).json({
       success: true,
-      message: 'Transaction created successfully',
-      data: transaction
+      message: 'Expense created successfully',
+      data: expense
     });
   } catch (error) {
     const errors = formatMongooseValidationErrors(error);
@@ -99,17 +104,17 @@ exports.createTransaction = async (req, res) => {
   }
 };
 
-// @desc    Get all transactions for logged in user
-// @route   GET /api/transactions
+// @desc    Get all expenses for logged in user
+// @route   GET /api/expenses
 // @access  Private
-exports.getTransactions = async (req, res) => {
+exports.getExpenses = async (req, res) => {
   try {
-    const transactions = await Transaction.find({ user: req.user.id }).sort({ date: -1 });
+    const expenses = await Expense.find({ user: req.user.id }).sort({ date: -1 });
 
     res.status(200).json({
       success: true,
-      count: transactions.length,
-      data: transactions
+      count: expenses.length,
+      data: expenses
     });
   } catch (error) {
     res.status(500).json({
@@ -119,20 +124,55 @@ exports.getTransactions = async (req, res) => {
   }
 };
 
-// @desc    Update transaction
-// @route   PUT /api/transactions/:id
+// @desc    Get expense summary for logged in user
+// @route   GET /api/expenses/summary
 // @access  Private
-exports.updateTransaction = async (req, res) => {
+exports.getExpenseSummary = async (req, res) => {
   try {
-    const transactionId = req.params.id;
-    if (!mongoose.Types.ObjectId.isValid(transactionId)) {
+    const userId = new mongoose.Types.ObjectId(req.user.id);
+
+    const [summary] = await Expense.aggregate([
+      { $match: { user: userId } },
+      {
+        $group: {
+          _id: null,
+          totalExpenses: { $sum: '$amount' }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          totalExpenses: 1
+        }
+      }
+    ]);
+
+    res.status(200).json({
+      success: true,
+      totalExpenses: summary?.totalExpenses || 0
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Server error'
+    });
+  }
+};
+
+// @desc    Update expense
+// @route   PUT /api/expenses/:id
+// @access  Private
+exports.updateExpense = async (req, res) => {
+  try {
+    const expenseId = req.params.id;
+    if (!mongoose.Types.ObjectId.isValid(expenseId)) {
       return res.status(400).json({
         success: false,
-        message: 'Invalid transaction id'
+        message: 'Invalid expense id'
       });
     }
 
-    const allowedFields = ['type', 'amount', 'description', 'category', 'date'];
+    const allowedFields = ['amount', 'description', 'category', 'date'];
     const updates = {};
 
     allowedFields.forEach((field) => {
@@ -151,11 +191,15 @@ exports.updateTransaction = async (req, res) => {
       });
     }
 
+    if (hasOwn(updates, 'description') && typeof updates.description === 'string') {
+      updates.description = updates.description.trim();
+    }
+
     if (hasOwn(updates, 'category') && typeof updates.category === 'string') {
       updates.category = updates.category.trim();
     }
 
-    const errors = validateTransactionPayload(updates, true);
+    const errors = validateExpensePayload(updates, true);
     if (Object.keys(errors).length > 0) {
       return res.status(400).json({
         success: false,
@@ -164,23 +208,23 @@ exports.updateTransaction = async (req, res) => {
       });
     }
 
-    const transaction = await Transaction.findOneAndUpdate(
-      { _id: transactionId, user: req.user.id },
+    const expense = await Expense.findOneAndUpdate(
+      { _id: expenseId, user: req.user.id },
       updates,
       { new: true, runValidators: true }
     );
 
-    if (!transaction) {
+    if (!expense) {
       return res.status(404).json({
         success: false,
-        message: 'Transaction not found'
+        message: 'Expense not found'
       });
     }
 
     res.status(200).json({
       success: true,
-      message: 'Transaction updated successfully',
-      data: transaction
+      message: 'Expense updated successfully',
+      data: expense
     });
   } catch (error) {
     const errors = formatMongooseValidationErrors(error);
@@ -200,34 +244,34 @@ exports.updateTransaction = async (req, res) => {
   }
 };
 
-// @desc    Delete transaction
-// @route   DELETE /api/transactions/:id
+// @desc    Delete expense
+// @route   DELETE /api/expenses/:id
 // @access  Private
-exports.deleteTransaction = async (req, res) => {
+exports.deleteExpense = async (req, res) => {
   try {
-    const transactionId = req.params.id;
-    if (!mongoose.Types.ObjectId.isValid(transactionId)) {
+    const expenseId = req.params.id;
+    if (!mongoose.Types.ObjectId.isValid(expenseId)) {
       return res.status(400).json({
         success: false,
-        message: 'Invalid transaction id'
+        message: 'Invalid expense id'
       });
     }
 
-    const transaction = await Transaction.findOneAndDelete({
-      _id: transactionId,
+    const expense = await Expense.findOneAndDelete({
+      _id: expenseId,
       user: req.user.id
     });
 
-    if (!transaction) {
+    if (!expense) {
       return res.status(404).json({
         success: false,
-        message: 'Transaction not found'
+        message: 'Expense not found'
       });
     }
 
     res.status(200).json({
       success: true,
-      message: 'Transaction deleted successfully'
+      message: 'Expense deleted successfully'
     });
   } catch (error) {
     res.status(500).json({
