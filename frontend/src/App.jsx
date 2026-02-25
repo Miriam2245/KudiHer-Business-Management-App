@@ -4,12 +4,14 @@ import { SideBar } from "./components/SideBar/SideBar";
 import { Dashboard } from "./pages/Dashboard/Dashboard";
 import WelcomePage from "./pages/WelcomePage/WelcomePage";
 import CreateAccount from "./pages/CreateAccount/CreateAccount";
+import SignIn from "./pages/SignIn/SignIn";
 
 function App() {
   return (
     <Routes>
       <Route path="/" element={<WelcomePage />} />
       <Route path="/create-account" element={<CreateAccount />} />
+      <Route path="/signin" element={<SignIn />} />
 
       {/* App pages - with sidebar */}
       <Route
