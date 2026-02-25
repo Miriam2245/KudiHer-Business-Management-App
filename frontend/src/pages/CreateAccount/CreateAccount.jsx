@@ -102,8 +102,12 @@ function CreateAccount() {
       </div>
 
       {/* Submit */}
-      <button className="ca-btn-primary">Create Account</button>
-
+      <button
+        className="ca-btn-primary"
+        onClick={() => navigate("/business-setup")}
+      >
+        Create Account
+      </button>
       {/* Sign in link */}
       <p className="ca-signin">
         Already have an account?{" "}

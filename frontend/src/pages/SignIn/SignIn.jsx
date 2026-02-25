@@ -40,8 +40,12 @@ function SignIn() {
         </div>
 
         {/* Sign in button */}
-        <button className="si-btn-primary">Sign in</button>
-
+        <button
+          className="si-btn-primary"
+          onClick={() => navigate("/dashboard")}
+        >
+          Sign in
+        </button>
         {/* OR divider */}
         <div className="si-divider">
           <span>OR</span>
