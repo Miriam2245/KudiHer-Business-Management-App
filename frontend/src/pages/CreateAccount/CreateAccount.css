@@ -126,3 +126,13 @@
   text-decoration: none;
   cursor: pointer;
 }
+.ca-error {
+  background-color: #ffe5e5;
+  color: #cc0000;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 14px;
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 16px;
+}
