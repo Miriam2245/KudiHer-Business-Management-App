@@ -9,7 +9,6 @@ import CashFlowIcon from "../../assets/images/sideBarImages/cashFlowIcon.svg?rea
 import ProfitabilityIcon from "../../assets/images/sideBarImages/profitabilityIcon.svg?react";
 import SettingsIcon from "../../assets/images/sideBarImages/settingsIcon.svg?react";
 import ProfileImageIcon from "../../assets/images/sideBarImages/profileImageIcon.svg?react";
-import { Link } from "react-router-dom";
 import { NavLink } from "react-router-dom";
 // import { useState } from "react";
 
@@ -22,7 +21,7 @@ export function SideBar({
 //         setActiveTab(tab);
 //     };
 
-    return (
+    return (  
         <>
         <aside className="sideBar">
             <div className="sideBarLogo">
@@ -39,7 +38,7 @@ export function SideBar({
                         </NavLink>
                     </li>
                     <li className="sideBarNavList">
-                        <NavLink to="/transaction" className={({ isActive }) => isActive ? "sideBarNavListLink active" : "sideBarNavListLink"}>
+                        <NavLink to="/transactions" className={({ isActive }) => isActive ? "sideBarNavListLink active" : "sideBarNavListLink"}>
                         <TransactionsIcon className="sideBarNavListLinkSvg"/>
                         <span>Transactions</span>
                         </NavLink>
@@ -85,11 +84,13 @@ export function SideBar({
                         <span>Settings</span>
                         </NavLink>
                     </li>
-                    <li className="sideBarNavList profile">
-                        <ProfileImageIcon className="sideBarNavListLinkSvg"/>
-                        <span>{title}</span>
-                    </li>
-                    <p> {designation}</p>
+                    <li className="sideBarProfile">
+    <ProfileImageIcon className="sideBarProfileIcon" />
+    <div className="sideBarProfileText">
+        <span className="sideBarProfileName">{title}</span>
+        <span className="sideBarProfileRole">{designation}</span>
+    </div>
+</li>
                 </ul>
             </nav>
             </div>
