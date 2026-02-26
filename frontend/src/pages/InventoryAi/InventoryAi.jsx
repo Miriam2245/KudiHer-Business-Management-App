@@ -1,11 +1,11 @@
 // =============================================================================
-// src/pages/InventoryAI/InventoryAI.jsx
+// src/pages/InventoryAi/InventoryAi.jsx
 //
-// File placement:  src/pages/InventoryAI/InventoryAI.jsx
-// CSS companion:   src/pages/InventoryAI/InventoryAI.css
+// File placement:  src/pages/InventoryAi/InventoryAi.jsx
+// CSS companion:   src/pages/InventoryAi/InventoryAi.css
 //
 // Routing (add to App.jsx — same pattern as every other app page):
-//   import InventoryAI from "./pages/InventoryAI/InventoryAI";
+//   import InventoryAi from "./pages/InventoryAi/InventoryAi";
 //   <Route path="/inventory-ai" element={
 //     <main className="appContainer"><SideBar /><InventoryAI /></main>
 //   } />
@@ -21,7 +21,7 @@ import {
   Zap,
   MoreVertical,
 } from "lucide-react";
-import "./InventoryAI.css";
+import "./InventoryAi.css";
 
 // ── Inventory data ─────────────────────────────────────────────────────────────
 const DUMMY_INVENTORY = [
