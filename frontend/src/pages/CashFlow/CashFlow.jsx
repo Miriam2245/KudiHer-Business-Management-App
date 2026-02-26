@@ -3,7 +3,7 @@ import {
   PieChart, Pie, Cell, Legend
 } from "recharts";
 import { TrendingUp, TrendingDown, Minus } from "lucide-react";
-import "./Cashflow.css";
+import "./CashFlow.css";
 
 const BAR_DATA = [
   { month: "Sept", income: 85000, expenses: 42000 },
