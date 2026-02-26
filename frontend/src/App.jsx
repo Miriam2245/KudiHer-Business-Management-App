@@ -10,7 +10,7 @@ import Transactions  from "./pages/Transactions/Transactions";
 import { AuthProvider } from './context/AuthContext';
 import AddIncome        from "./pages/AddIncome/AddIncome";    
 import AddExpense       from "./pages/AddExpense/AddExpense"; 
-import InventoryAI      from "./pages/InventoryAI/InventoryAI";
+import InventoryAI      from "./pages/InventoryAi/InventoryAi";
 import Stock            from "./pages/Stock/Stock";
 import Reports         from "./pages/Reports/Reports";
 import CashFlow         from "./pages/CashFlow/CashFlow";
