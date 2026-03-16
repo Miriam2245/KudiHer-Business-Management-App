@@ -9,7 +9,7 @@
     flex-direction: row;
     width: 100vw;
     max-width: 90rem;
-    height: 100vh;
+    min-height: 100vh;
     box-sizing: border-box;
     font-family: "Inter", sans-serif;
     font-optical-sizing: auto;
